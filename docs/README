@@ -1,0 +1,68 @@
+Some notes on WBC Frontal Analysis package (global_fronts.py)
+
+The main routine is ush/global_fronts.py, with support routines in
+ush/hausdorff.py and ush/read_navy.py.  The first has three different
+Hausdorff metrics (two can also be found in scipy and scikit-image if
+you want to use canned routines.  There's a driver script,
+scripts/global_fronts.sh, but it's built specifically for the SLURM
+system on Hera.
+
+The python routine can be controlled from switches at the top of the file:
+
+# task settings
+maxjobs=11            # Number of parallel tasks (python multiprocessing)
+WANT_POOL=True        # True will turn on parallel processing
+UPDATE_DB=True        # Update the accumulated stats database
+WANT_STATS_PLOTS=True # Read the stats database and plot timeseries 
+QUANTILE=0.75         # setting for Quantile Hausdorff
+
+Additionally, you will need to set some directories:
+
+in global_fronts.py:
+
+lines 41-43:
+# global parameters 
+imageDir='/scratch2/NCEPDEV/stmp1/Todd.Spindler/images/class-4/fronts'
+dbFile='/scratch2/NCEPDEV/marine/Todd.Spindler/save/VPPPG/Global_RTOFS/EMC_ocean-verification/fronts/fix/global_fronts.db'
+
+lines 504-505:
+    # set model directory (global)
+    modelDir='/scratch2/NCEPDEV/marine/Todd.Spindler/noscrub/Global/archive/'+theDate.strftime('%Y%m%d')
+
+in read_navy.py:
+
+lines 7-8:
+# DCOM location
+DCOMdir='/scratch2/NCEPDEV/marine/Todd.Spindler/noscrub/DCOM'
+
+If you are running on Hera, you can use my DCOM directory, which has
+all of the Navy messages from 2019-2021 (and is updated daily).
+Otherwise, you'll have to figure out how to get the DCOM messages from
+WCOSS.  You can find the Navy messages like this:
+
+cd /gpfs/dell1/nco/ops/dcom/prod
+ls */wtxtbul/* | egrep '.sub|.mrf'
+
+*.mrf are NAVOCEANO msgs (Naval Oceanographic Office)
+*.sub are NAVEASTOCEANCEN msgs (Naval Eastern Oceanography Center)
+
+read_navy.py has routines to decode both types.  There's some
+confusion over my use of NAVO and NAVOCEANO, as they are the same
+organization (old confused nomenclature).  I ought to rename
+read_navo() to read_neoc().  Someday, maybe.
+
+Beyond that, I'd recommend that you set it up and configure it to read
+your local model data archive directories.  I've put some RTOFS data
+in the Google Drive directory that you can use to test, plus some DCOM
+message data as well.  The global_fronts.py is set up to only process
+nowcasts (the _n024_ files in the RTOFS folder).  Once you see how it
+works on that you can expand it to process forecasts.
+
+To get it to read your model data, you'll have to rework read_model
+and the regions dictionary.  Regions has the subregions for the fronts
+plus the in-situ temperatures, depths in meters for the isobath, and
+z-level numbers (so the code doesn't have to do depth lookups all the time).
+
+Hope this helps.
+Todd
+
