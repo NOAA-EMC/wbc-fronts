@@ -5,3 +5,8 @@ This repository is forked from NOAA EMC Ocean Verification branch frontal analys
 The purpose of this repository is to show comparison of observational analyses of three Western Boundary Currents:
 the Gulf Stream, Loop CUrrent and Kurushio Current obtained from Naval Oceanographic Office for the Gulf Streamand the Naval Eastern Ocean Center for the Loop CUrrent and Kuroshio Current with the appropriate frontl location computed from the Global RTOFS model, overlaid on maps of the Global RTOFS Sea Surface Temperature, Sea Surface Height, and Surface Currents.
 
+# Technical Details
+The Gulf Stream and Loop Current location is defined as the intersection of the 12 degree celsius isotherm and 400 meter isobath.
+The Kuroshio Current locaiton is defined as the intersection of the 14 degree celsius isotherm and the 200 meter isobath.
+
+The Hausdorff distance between two sets of points (in this case the Gulf Stream North Wall Navy analyses and the North Wall from the Global model such as RTOFS) is a measure of how far apart two polygon shapes or set of points are and is computed as the greatest of all the distances from the points in one set to the closest point in the other set. The modified Hausdorff distance is the minimum of the Hausdorff distances computed by swapping the point sets. 
