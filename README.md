@@ -10,3 +10,5 @@ The Gulf Stream and Loop Current location is defined as the intersection of the 
 The Kuroshio Current locaiton is defined as the intersection of the 14 degree celsius isotherm and the 200 meter isobath.
 
 The Hausdorff distance between two sets of points (in this case the Gulf Stream North Wall Navy analyses and the North Wall from the Global model such as RTOFS) is a measure of how far apart two polygon shapes or set of points are and is computed as the greatest of all the distances from the points in one set to the closest point in the other set. The modified Hausdorff distance is the minimum of the Hausdorff distances computed by swapping the point sets. 
+
+#How to Add Mom6 Capabilities
