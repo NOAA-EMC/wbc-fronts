@@ -5,7 +5,7 @@ import pandas as pd
 #import pdb
 
 # DCOM location
-DCOMdir='/scratch2/NCEPDEV/marine/Todd.Spindler/noscrub/DCOM'
+DCOMdir='/work/noaa/marine/erob/soca-diag-eric/2020/'
 
 #dataDir='/marine/noscrub/Todd.Spindler/Navy'
 hemisphere={'N':1,'S':-1,'E':1,'W':-1}
@@ -21,7 +21,7 @@ def parse_contents(front,header,contents):
     return front
 
 #----------------------------------------------------------------------------
-def read_navo(year=f'{datetime.now():%Y}'):
+def read_navo(thedate ,year=f'{datetime.now():%Y}'):
     """
     Decoder for the NAVO Gulf Stream Frontal Analysis text messages in /dcom
     """
@@ -31,16 +31,17 @@ def read_navo(year=f'{datetime.now():%Y}'):
     eomname='FRONTAL DATA BASED ON MAX'
     
     front={}
+    year= 2020
+    # read in header and body                                                                                                                             
+    theDate_String =thedate.strftime('%Y%m%d')
+    allfiles=glob.glob(f'{DCOMdir}/{theDate_String}/wtxtbul/gs*.sub')
+    allfiles.sort()
 
     #year=datetime.now().strftime('%Y')
     # read in header and body
-    #allfiles=glob.glob('/dcom/us007003/'+year+'*/wtxtbul/gs*.sub')
-    allfiles=glob.glob(f'{DCOMdir}/{year}*/wtxtbul/gs*.sub')
-    allfiles.sort()
-    
     # check the date.  NAVO seems to be a day ahead.
     latest=allfiles[-1]
-    latest_date=datetime.strptime(latest.split('/')[7],'%Y%m%d')
+#    latest_date=datetime.strptime(latest.split('/')[7],'%Y%m%d')
 
     for nf,filename in enumerate(allfiles):
         with open(filename) as f:
@@ -75,8 +76,8 @@ def read_navo(year=f'{datetime.now():%Y}'):
             else:
                 southwall=contents[south+1:north]
                 northwall=contents[north+1:eom]
-            thedate=datetime.strptime(''.join(contents[north].split()[-3:]),'%d%b%y')
-            thedate=min(latest_date,thedate) # in case there's an offset in the date    
+ #           thedate=datetime.strptime(''.join(contents[north].split()[-3:]),'%d%b%y')
+#            thedate=min(latest_date,thedate) # in case there's an offset in the date    
             if northname not in front:
                 front[northname]={thedate:{}}
             if southname not in front:

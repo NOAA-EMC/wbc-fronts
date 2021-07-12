@@ -39,17 +39,16 @@ import hausdorff as haus                         # local module
 warnings.filterwarnings("ignore")
 
 # global parameters 
-imageDir='/scratch2/NCEPDEV/stmp1/Todd.Spindler/images/class-4/fronts'
-dbFile='/scratch2/NCEPDEV/marine/Todd.Spindler/save/VPPPG/Global_RTOFS/EMC_ocean-verification/fronts/fix/global_fronts.db'
+imageDir='/work/noaa/marine/erob/soca-diag-eric/' 
+dbFile='/home/erobin/fronts/fix/global_fronts.db'
 modelDir=[]
-
 # set to old matplotlib defaults
 plt.style.use('classic')
 
 # task settings
 maxjobs=11            # Number of parallel tasks (python multiprocessing)
-WANT_POOL=True        # True will turn on parallel processing
-UPDATE_DB=True        # Update the accumulated stats database
+WANT_POOL=False        # True will turn on parallel processing
+UPDATE_DB=False        # Update the accumulated stats database
 WANT_STATS_PLOTS=True # Read the stats database and plot timeseries 
 QUANTILE=0.75         # setting for Quantile Hausdorff
 
@@ -76,6 +75,7 @@ class MidpointNormalize(colors.Normalize):
 # initialize the database
 #------------------------
 def init_db(dbfile,table):
+    
         
     # connect to db file
     conn = sqlite3.connect(dbfile,detect_types=sqlite3.PARSE_DECLTYPES,timeout=30.0)
@@ -100,11 +100,11 @@ def init_db(dbfile,table):
 # update the database                           
 #-----------------------------------------------
 def update_db(region,thedate,fcst,haus_navy,modhaus_navy,quanthaus_navy):
-        
-    init_db(dbfile,region['db'])    
+     
+    init_db(dbFile,region['db'])    
 
     # connect to db file
-    conn = sqlite3.connect(dbfile,detect_types=sqlite3.PARSE_DECLTYPES,timeout=30.0)
+    conn = sqlite3.connect(dbFile,detect_types=sqlite3.PARSE_DECLTYPES,timeout=30.0)
     c = conn.cursor()    
 
     # Larger example that inserts many records at a time
@@ -167,13 +167,17 @@ def read_model(fcst,validDate,region):
     else:
         model={'lon':[],'lat':[]}
 
-        # open the datasets
-        nc_sal=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3zsio.nc',decode_times=True)
-        nc_tmp=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3ztio.nc',decode_times=True)
-        nc_ssh=xr.open_dataset(f'{modelDir}/rtofs_glo_2ds_{fcst_str}_diag.nc',decode_times=True)
-        nc_u=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3zuio.nc',decode_times=True)
-        nc_v=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3zvio.nc',decode_times=True)
-
+#        # open the datasets
+ #       nc_sal=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3zsio.nc',decode_times=True)
+  #      nc_tmp=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3ztio.nc',decode_times=True)
+   #     nc_ssh=xr.open_dataset(f'{modelDir}/rtofs_glo_2ds_{fcst_str}_diag.nc',decode_times=True)
+    #    nc_u=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3zuio.nc',decode_times=True)
+     #   nc_v=xr.open_dataset(f'{modelDir}/rtofs_glo_3dz_{fcst_str}_daily_3zvio.nc',decode_times=True)
+        nc_sal=xr.open_dataset("/work/noaa/marine/erob/soca-diag-eric/2020_used/{}/wtxtbul/rtofs_glo_3dz_n024_daily_3zsio.nc".format(validDate.strftime('%Y%m%d')), decode_times=True)
+        nc_tmp=xr.open_dataset("/work/noaa/marine/erob/soca-diag-eric/2020_used/{}/wtxtbul/rtofs_glo_3dz_n024_daily_3ztio.nc".format(validDate.strftime('%Y%m%d')),decode_times=True)
+        nc_ssh=xr.open_dataset('/work/noaa/marine/erob/soca-diag-eric/2020_used/{}/wtxtbul/rtofs_glo_2ds_n024_daily_diag.nc'.format(validDate.strftime('%Y%m%d')),decode_times=True)
+        nc_u=xr.open_dataset('/work/noaa/marine/erob/soca-diag-eric/2020_used/{}/wtxtbul/rtofs_glo_3dz_n024_daily_3zuio.nc'.format(validDate.strftime('%Y%m%d')) ,decode_times=True)
+        nc_v=xr.open_dataset('/work/noaa/marine/erob/soca-diag-eric/2020_used/{}/wtxtbul/rtofs_glo_3dz_n024_daily_3zvio.nc'.format(validDate.strftime('%Y%m%d')),decode_times=True)
         # drop singleton dimensions
         nc_sal=nc_sal.squeeze()
         nc_tmp=nc_tmp.squeeze()
@@ -364,13 +368,13 @@ def plot_map(model,param,navy,region):
     txt.set_family('monospace')
 
     # add some branding and dates
-    noaa_logo=image.imread('/scratch2/NCEPDEV/marine/Todd.Spindler/save/Logos/NOAA_logo.png')
-    nws_logo=image.imread('/scratch2/NCEPDEV/marine/Todd.Spindler/save/Logos/NWS_logo.png')
-    fig.figimage(noaa_logo,
-      yo=fig.get_figheight()*fig.dpi-noaa_logo.shape[0])
-    fig.figimage(nws_logo,
-      xo=fig.get_figwidth()*fig.get_dpi()-nws_logo.shape[1],
-      yo=fig.get_figheight()*fig.get_dpi()-nws_logo.shape[0])
+#    noaa_logo=image.imread('work/noaa/marine/lliu/tools/fronts/logo/NOAA_logo.png')
+   # nws_logo=image.imread('work/noaa/marine/lliu/tools/fronts/logo/NWS_logo.png')
+ #   fig.figimage(noaa_logo,
+  #    yo=fig.get_figheight()*fig.dpi-noaa_logo.shape[0])
+   # fig.figimage(nws_logo,
+    #  xo=fig.get_figwidth()*fig.get_dpi()-nws_logo.shape[1],
+     # yo=fig.get_figheight()*fig.get_dpi()-nws_logo.shape[0])
     plt.annotate('NCEP/EMC Verification Post Processing Product Generation Branch',
       xy=(0.01,0.01),xycoords='figure fraction',
       horizontalalignment='left',fontsize='x-small')
@@ -379,6 +383,7 @@ def plot_map(model,param,navy,region):
       horizontalalignment='right',fontsize='x-small')    
     
     plt.savefig(imageDir+'/'+model['vdate'].strftime('%Y%m%d')+'/'+region['db']+'_location_'+param+'_'+"{:03n}".format(model['fcst'])+'.png',dpi=fig.dpi)
+    print('saved plot to'.format((imageDir+'/'+model['vdate'].strftime('%Y%m%d')+'/'+region['db']+'_location_'+param+'_'+"{:03n}".format(model['fcst'])+'.png')))
     plt.close()
     
     return
@@ -393,7 +398,7 @@ def plot_stats(region):
     dateFmt=DateFormatter("%b %Y")
 
     # get all dates
-    dbfile='/scratch2/NCEPDEV/marine/Todd.Spindler/save/VPPPG/Global_RTOFS/EMC_ocean-verification/fronts/fix/global_fronts.db'
+    dbfile='/home/erobin/fronts/fix/global_fronts.db'
     conn = sqlite3.connect(dbfile,detect_types=sqlite3.PARSE_DECLTYPES,timeout=30.0)
     df=pd.read_sql_query('SELECT date, forecast FROM gulfstream '+\
                          'UNION '+\
@@ -442,13 +447,13 @@ def plot_stats(region):
         
         # add some branding and dates
         #add_mmab_logos()
-        noaa_logo=image.imread('/scratch2/NCEPDEV/marine/Todd.Spindler/save/Logos/NOAA_logo.png')
-        nws_logo=image.imread('/scratch2/NCEPDEV/marine/Todd.Spindler/save/Logos/NWS_logo.png')
-        fig.figimage(noaa_logo,
-            yo=fig.get_figheight()*fig.dpi-noaa_logo.shape[0])
-        fig.figimage(nws_logo,
-            xo=fig.get_figwidth()*fig.dpi-nws_logo.shape[1],
-            yo=fig.get_figheight()*fig.dpi-nws_logo.shape[0])
+ #       noaa_logo=image.imread('work/noaa/marine/lliu/tools/fronts/logo/NOAA_logo.png')
+#        nws_logo=image.imread('work/noaa/marine/lliu/tools/fronts/logo/NWS_logo.png')
+  #      fig.figimage(noaa_logo,
+   #         yo=fig.get_figheight()*fig.dpi-noaa_logo.shape[0])
+    #    fig.figimage(nws_logo,
+     #       xo=fig.get_figwidth()*fig.dpi-nws_logo.shape[1],
+      #      yo=fig.get_figheight()*fig.dpi-nws_logo.shape[0])
         plt.annotate('NCEP/EMC/Verification Post Processing Product Generation Branch',
             xy=(0.01,0.01),xycoords='figure fraction',
             horizontalalignment='left',fontsize='x-small')
@@ -468,20 +473,20 @@ def process_region(region,fcst,navy,theDate):
     
     # load RTOFS
     model=read_model(fcst,theDate,region)
-    
+    print('finished reading model')
     # compute the metrics
     haus_navy,modhaus_navy,quanthaus_navy=hausdorff_metrics(model,navy,region)
-    
+    print('finished hausdorff metrics')
     # update the dbase
     if UPDATE_DB:
         update_db(region,model['vdate'],fcst,haus_navy,modhaus_navy,quanthaus_navy)
-        
+    print('finished updating DB')
     # create imagedir by date if needed
     if not os.path.isdir(imageDir+'/'+model['vdate'].strftime('%Y%m%d')):
         os.makedirs(imageDir+'/'+model['vdate'].strftime('%Y%m%d'))
     if not os.path.isdir(imageDir+'/stats'):
         os.makedirs(imageDir+'/stats')
-        
+    print('starting plots')
     # make pretty pictures
     plot_map(model,'sst',navy,region)
     plot_map(model,'ssh',navy,region)
@@ -501,13 +506,13 @@ if __name__ == '__main__':
         
     print('Starting WBC Fronts at',datetime.now(),'for',theDate)
 
-    # set model directory (global)
-    modelDir='/scratch2/NCEPDEV/marine/Todd.Spindler/noscrub/Global/archive/'+theDate.strftime('%Y%m%d')
+    # set model directory RTOFS (global)
+    modelDir='/work/noaa/marine/erob/soca-diag-eric/2020_used/'+theDate.strftime('%Y%m%d')+'/wtxtbul'
         
     regions=load_regions()
     
     # process navy frontal messages
-    navo=read_navo(f'{theDate:%Y}')
+    navo=read_navo(theDate, f'{theDate:%Y}')
     navoceano=read_navoceano(f'{theDate:%Y}')
 
     if WANT_POOL:
